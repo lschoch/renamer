@@ -12,7 +12,7 @@ from fitz.fitz import Widget
 
 def retern():
     if not (new_var.get() == root.file_name or new_var.get() == ''):
-        mb = messagebox.askyesno("renamer", "You entered a new file name. Do you want to save it?")
+        mb = messagebox.askyesno("PDF Renamer", "You entered a new file name. Do you want to save it?")
         if not mb:
             new_var.set(root.file_name)
             retern()
@@ -27,6 +27,7 @@ def retern():
         for widget in root.winfo_children():
             if isinstance(widget, tk.Toplevel):
                 widget.destroy()
+        # Switch back to top frame
         frm_top.grid(
             row=0,
             column=0,
@@ -40,7 +41,7 @@ def quit():
 
 def next():
     if not (new_var.get() == root.file_name or new_var.get() == ''):
-        mb = messagebox.askyesno("renamer", "You entered a new file name. Do you want to save it?")
+        mb = messagebox.askyesno("PDF Renamer", "You entered a new file name. Do you want to save it?")
         if not mb:
             new_var.set(root.file_name)
             next()
@@ -55,7 +56,7 @@ def next():
         root.counter+=1
         # Check whether the last pdf has been viewed 
         if root.counter >= len(root.file_list):
-            messagebox.showinfo('renamer', 'No more pdf files in the specified directory!')
+            messagebox.showinfo('PDF Renamer', 'No more pdf files in the specified directory!')
             retern()
         else:
             # Create file_name (without the pdf extension)
@@ -103,7 +104,7 @@ def start():
         # Save total number of pdf files in the directory
         root.pdf_count = len(root.file_list)
         if root.pdf_count < 1:
-            messagebox.showinfo('renamer', 'There are no pdf files in the specified directory.\n \
+            messagebox.showinfo('PDF Renamer', 'There are no pdf files in the specified directory.\n \
 Click <Start> to try again or <Quit> to exit.')    
         else:
             if root.pathname and root.file_list:
@@ -152,7 +153,7 @@ Click <Start> to try again or <Quit> to exit.')
                 lbl_pdf.pack(fill="both", expand=1)
                 
     else:
-        messagebox.showinfo('renamer', 'That is not a valid directory. Try again.')
+        messagebox.showinfo('PDF Renamer', 'That is not a valid directory. Try again.')
 
 def save():
     src = root.pathname + '/' + root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])]
@@ -160,18 +161,18 @@ def save():
     # print('src: ', src)
     # print('dst: ', dst)
     if os.path.exists(dst):
-        mb = messagebox.askyesno('renamer', 'A file with this name already exists. Overwrite?')
+        mb = messagebox.askyesno('PDF Renamer', 'A file with this name already exists. Overwrite?')
         if mb:
             os.remove(dst)
             os.rename(src, dst)
-            messagebox.showinfo('renamer', 'The file was renamed.')
+            messagebox.showinfo('PDF Renamer', 'The file was renamed.')
         else:
             new_var.set('')
-            messagebox.showinfo('renamer', 'File name was not changed.')
+            messagebox.showinfo('PDF Renamer', 'File name was not changed.')
     else:
         os.rename(src, dst)
         new_var.set('')
-        messagebox.showinfo('renamer', 'The file was renamed.')
+        messagebox.showinfo('PDF Renamer', 'The file was renamed.')
         #next()
 
 # Initialize tk
