@@ -11,80 +11,84 @@ from PIL import Image, ImageTk
 from fitz.fitz import Widget
 
 def retern():
-    # Reset the starting parameters so that the program can be restarted without quitting
-    root.counter = 0
-    root.pathname = ''
-    root.file_list = []
-    # Destroy existing toplevels to prevent accumulation
-    for widget in root.winfo_children():
-        if isinstance(widget, tk.Toplevel):
-            widget.destroy()
-    frm_top.grid(
-        row=0,
-        column=0,
-        ipady=5,
-        sticky="nsew"
-    )
-    frm_bottom.grid_remove()
+    if not (new_var.get() == root.file_name or new_var.get() == ''):
+        mb = messagebox.askyesno("renamer", "You entered a new file name. Do you want to save it?")
+        if not mb:
+            new_var.set(root.file_name)
+            retern()
+        else:
+            save()
+    else:
+        # Reset the starting parameters so that the program can be restarted without quitting
+        root.counter = 0
+        root.pathname = ''
+        root.file_list = []
+        # Destroy existing toplevels to prevent accumulation
+        for widget in root.winfo_children():
+            if isinstance(widget, tk.Toplevel):
+                widget.destroy()
+        frm_top.grid(
+            row=0,
+            column=0,
+            ipady=5,
+            sticky="nsew"
+        )
+        frm_bottom.grid_remove()
 
 def quit():
     root.destroy()
 
-def check_save():
-    print(new_var.get())
-    if len(new_var.get()) > 0:
+def next():
+    if not (new_var.get() == root.file_name or new_var.get() == ''):
         mb = messagebox.askyesno("renamer", "You entered a new file name. Do you want to save it?")
         if not mb:
-            new_var.set('')
+            new_var.set(root.file_name)
             next()
         else:
             save()
     else:
-        next()
-
-def next():
-    # Destroy existing toplevels to prevent accumulation
-    for widget in root.winfo_children():
-        if isinstance(widget, tk.Toplevel):
-            widget.destroy()
-    # Increment the counter
-    root.counter+=1
-    # Check whether the last pdf has been viewed 
-    if root.counter >= len(root.file_list):
-        messagebox.showinfo('renamer', 'No more pdf files in the specified directory!')
-        retern()
-    else:
-        # Create file_name (without the pdf extension)
-        file_name = root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])-4]
-        # Populate text field of lbl_current_is
-        lbl_current_is.config(
-            text = file_name + '.pdf' + '   #' + str(root.counter+1) + '/' + str(root.pdf_count)
-        )
-        # Populate text field of ent_new
-        new_var.set(file_name)
-        # Create the next pdf image (first page)
-        location = root.file_list[root.counter]
-        # Get the next pdf
-        doc = fitz.open(location)
-        # Get first page
-        page = doc[0]
-        # Render page as a pixmap (raster)image
-        pix = page.get_pixmap()
-        # Calculate zoom to fit the top-level window width (leaving 5 pixels to a side)
-        zoom = 640 / pix.width
-        mat = fitz.Matrix(zoom, zoom)
-        pix = page.get_pixmap(matrix=mat)
-        # Set the mode depending on alpha
-        mode = "RGBA" if pix.alpha else "RGB"
-        img = Image.frombytes(mode, (pix.width, pix.height), pix.samples)
-        tkimage = ImageTk.PhotoImage(img)
-        # Create top-level to view the pdf
-        tl_next = tk.Toplevel(root, name='tl_next_name')
-        tl_next.geometry("%dx%d+%d+%d" % (650, 790, root.winfo_x() + 675, root.winfo_y()))
-        tl_next.title('First Page')
-        lbl_pdf = tk.Label(master=tl_next, image=tkimage)
-        lbl_pdf.image = tkimage
-        lbl_pdf.pack(fill="both", expand=1)
+        # Destroy existing toplevels to prevent accumulation
+        for widget in root.winfo_children():
+            if isinstance(widget, tk.Toplevel):
+                widget.destroy()
+        # Increment the counter
+        root.counter+=1
+        # Check whether the last pdf has been viewed 
+        if root.counter >= len(root.file_list):
+            messagebox.showinfo('renamer', 'No more pdf files in the specified directory!')
+            retern()
+        else:
+            # Create file_name (without the pdf extension)
+            root.file_name = root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])-4]
+            # Populate text field of lbl_current_is
+            lbl_current_is.config(
+                text = root.file_name + '.pdf' + '   #' + str(root.counter+1) + '/' + str(root.pdf_count)
+            )
+            # Populate text field of ent_new
+            new_var.set(root.file_name)
+            # Create the next pdf image (first page)
+            location = root.file_list[root.counter]
+            # Get the next pdf
+            doc = fitz.open(location)
+            # Get first page
+            page = doc[0]
+            # Render page as a pixmap (raster)image
+            pix = page.get_pixmap()
+            # Calculate zoom to fit the top-level window width (leaving 5 pixels to a side)
+            zoom = 640 / pix.width
+            mat = fitz.Matrix(zoom, zoom)
+            pix = page.get_pixmap(matrix=mat)
+            # Set the mode depending on alpha
+            mode = "RGBA" if pix.alpha else "RGB"
+            img = Image.frombytes(mode, (pix.width, pix.height), pix.samples)
+            tkimage = ImageTk.PhotoImage(img)
+            # Create top-level to view the pdf
+            tl_next = tk.Toplevel(root, name='tl_next_name')
+            tl_next.geometry("%dx%d+%d+%d" % (650, 790, root.winfo_x() + 675, root.winfo_y()))
+            tl_next.title('First Page')
+            lbl_pdf = tk.Label(master=tl_next, image=tkimage)
+            lbl_pdf.image = tkimage
+            lbl_pdf.pack(fill="both", expand=1)
 
 def start():
     # Use file dialog to select directory
@@ -112,13 +116,13 @@ Click <Start> to try again or <Quit> to exit.')
                     sticky="nsew"
                 )
                 # Create file_name (without the pdf extension)
-                file_name = root.file_list[0][len(root.pathname)+1:len(root.file_list[0])-4]
+                root.file_name = root.file_list[0][len(root.pathname)+1:len(root.file_list[0])-4]
                 # Populate text field of lbl_current_is
                 lbl_current_is.config(
-                    text = file_name + '.pdf' + '   #1' + '/' + str(root.pdf_count)
+                    text = root.file_name + '.pdf' + '   #1' + '/' + str(root.pdf_count)
                 )
                 # Populate text field of ent_new
-                new_var.set(file_name)
+                new_var.set(root.file_name)
                 # Create the pdf image (first page)
                 location = root.file_list[0]
                 doc = fitz.open(location)
@@ -152,7 +156,9 @@ Click <Start> to try again or <Quit> to exit.')
 
 def save():
     src = root.pathname + '/' + root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])]
-    dst = root.pathname + '/' + new_var.get()
+    dst = root.pathname + '/' + new_var.get() + '.pdf'
+    # print('src: ', src)
+    # print('dst: ', dst)
     if os.path.exists(dst):
         mb = messagebox.askyesno('renamer', 'A file with this name already exists. Overwrite?')
         if mb:
@@ -166,7 +172,7 @@ def save():
         os.rename(src, dst)
         new_var.set('')
         messagebox.showinfo('renamer', 'The file was renamed.')
-        next()
+        #next()
 
 # Initialize tk
 root= tk.Tk()
@@ -377,7 +383,7 @@ btn_next = ttk.Button(
     master=frm_bottom_btns,
     width=5,
     text="Next",
-    command=lambda:check_save()
+    command=lambda:next()
 )
 
 btn_return = ttk.Button(
