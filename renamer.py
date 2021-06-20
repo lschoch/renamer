@@ -10,6 +10,11 @@ import fitz
 from PIL import Image, ImageTk
 from fitz.fitz import Widget
 
+# Create flag to tell the next function if it is seeing a request from the back button
+def back():
+    root.back = True
+    next()
+
 def retern():
     if not (new_var.get() == root.file_name or new_var.get() == ''):
         mb = messagebox.askyesno("PDF Renamer", "You entered a new file name. Do you want to save it?")
@@ -48,12 +53,31 @@ def next():
         else:
             save()
     else:
+        # Activate back button 
+        btn_back["state"] = "normal"
         # Destroy existing toplevels to prevent accumulation
         for widget in root.winfo_children():
             if isinstance(widget, tk.Toplevel):
                 widget.destroy()
         # Increment the counter
         root.counter+=1
+
+        # Check whether this call came from the back function
+        if root.back:
+            print ('back - root.counter: ', root.counter)
+            # Reset root.back
+            root.back = False
+            if root.counter <= 0:
+                root.counter == 0
+            else:
+                root.counter -= 2
+            if root.counter > 0:
+                # Activate back button 
+                btn_back['state'] = 'normal'
+            else:
+                # Disable the back button
+                btn_back['state'] = 'disabled'
+        print ('final counter: ', root.counter)
         # Check whether the last pdf has been viewed 
         if root.counter >= len(root.file_list):
             messagebox.showinfo('PDF Renamer', 'No more pdf files in the specified directory!')
@@ -92,6 +116,10 @@ def next():
             lbl_pdf.pack(fill="both", expand=1)
 
 def start():
+    # Disable the back button
+    print (btn_back['state'])
+    if btn_back['state'] == 'normal':
+        btn_back['state'] = 'disabled'
     # Use file dialog to select directory
     root.pathname = fd.askdirectory(
         title='Select directory',
@@ -190,6 +218,7 @@ root.counter = 0
 root.pdf_count = 0
 root.pathname = ''
 root.file_list = []
+root.back = False
 
 # Set variables for text retrieval
 path_var=tk.StringVar()
@@ -380,6 +409,13 @@ btn_save = ttk.Button(
     command=lambda:save()
 )
 
+btn_back = ttk.Button(
+    master=frm_bottom_btns,
+    width=5,
+    text="Back",
+    command=lambda:back()
+)
+
 btn_next = ttk.Button(
     master=frm_bottom_btns,
     width=5,
@@ -397,25 +433,34 @@ btn_return = ttk.Button(
 btn_save.grid(
     row=0,
     column=0,
-    padx=5,
+    padx=10,
     ipadx=10,
     pady=5,
     sticky="e"
 )
 
-btn_next.grid(
+btn_back.grid(
     row=0,
     column=1,
-    padx=5,
+    padx=10,
     ipadx=10,
     pady=5,
-    sticky="ns"
+    #sticky="e"
+)
+
+btn_next.grid(
+    row=0,
+    column=2,
+    padx=10,
+    ipadx=10,
+    pady=5,
+    #sticky="ns"
 )
 
 btn_return.grid(
     row=0,
-    column=2,
-    padx=5,
+    column=3,
+    padx=10,
     ipadx=10,
     pady=5,
     sticky="w"
