@@ -10,7 +10,6 @@ import fitz
 from PIL import Image, ImageTk
 from fitz.fitz import Widget
 
-
 def retern():
     # Reset the starting parameters so that the program can be restarted without quitting
     root.counter = 0
@@ -55,13 +54,17 @@ def next():
         messagebox.showinfo('renamer', 'No more pdf files in the specified directory!')
         retern()
     else:
-        # Get the next pdf
+        # Create file_name (without the pdf extension)
+        file_name = root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])-4]
+        # Populate text field of lbl_current_is
         lbl_current_is.config(
-            text=root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])] \
-                + '   #' + str(root.counter + 1) + '/' + str(root.pdf_count)
+            text = file_name + '.pdf' + '   #' + str(root.counter+1) + '/' + str(root.pdf_count)
         )
+        # Populate text field of ent_new
+        new_var.set(file_name)
+        # Create the next pdf image (first page)
         location = root.file_list[root.counter]
-        # Create pdf image
+        # Get the next pdf
         doc = fitz.open(location)
         # Get first page
         page = doc[0]
@@ -108,11 +111,14 @@ Click <Start> to try again or <Quit> to exit.')
                     column=0,
                     sticky="nsew"
                 )
+                # Create file_name (without the pdf extension)
+                file_name = root.file_list[0][len(root.pathname)+1:len(root.file_list[0])-4]
+                # Populate text field of lbl_current_is
                 lbl_current_is.config(
-                    text=root.file_list[0][len(root.pathname)+1:len(root.file_list[0])] \
-                        + '   #1' + '/' + str(root.pdf_count)
+                    text = file_name + '.pdf' + '   #1' + '/' + str(root.pdf_count)
                 )
-                new_var.set(root.file_list[0][len(root.pathname)+1:len(root.file_list[0])-4])
+                # Populate text field of ent_new
+                new_var.set(file_name)
                 # Create the pdf image (first page)
                 location = root.file_list[0]
                 doc = fitz.open(location)

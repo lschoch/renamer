@@ -14,10 +14,7 @@
 
 # 812-206-7620, Donna; Milton Wade
 
-# don't allow extension change
-# auto extension
-# existing name in new, will have to change check_save (new_var not
-#   equal to current 
-save with .pdf added to entry
-add current to entry in next function
-back
+# change check_save (new_var not equal to current 
+# save with .pdf added to entry
+# back
+# check_save on return
