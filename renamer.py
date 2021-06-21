@@ -1,10 +1,11 @@
 import os.path
 import os
 import glob
-from sys import pycache_prefix
+#from sys import pycache_prefix
 import tkinter as tk
 from tkinter import Tk, Toplevel, messagebox
 from tkinter import filedialog as fd
+from tkinter.constants import END
 import tkinter.ttk as ttk
 import fitz
 from PIL import Image, ImageTk
@@ -64,7 +65,6 @@ def next():
 
         # Check whether this call came from the back function
         if root.back:
-            print ('back - root.counter: ', root.counter)
             # Reset root.back
             root.back = False
             if root.counter <= 0:
@@ -77,7 +77,6 @@ def next():
             else:
                 # Disable the back button
                 btn_back['state'] = 'disabled'
-        print ('final counter: ', root.counter)
         # Check whether the last pdf has been viewed 
         if root.counter >= len(root.file_list):
             messagebox.showinfo('PDF Renamer', 'No more pdf files in the specified directory!')
@@ -117,7 +116,6 @@ def next():
 
 def start():
     # Disable the back button
-    print (btn_back['state'])
     if btn_back['state'] == 'normal':
         btn_back['state'] = 'disabled'
     # Use file dialog to select directory
@@ -184,25 +182,32 @@ Click <Start> to try again or <Quit> to exit.')
         messagebox.showinfo('PDF Renamer', 'That is not a valid directory. Try again.')
 
 def save():
-    src = root.pathname + '/' + root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])]
+    # name = current name
+    name = root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])]
+    src = root.pathname + '/' + name
     dst = root.pathname + '/' + new_var.get() + '.pdf'
-    # print('src: ', src)
-    # print('dst: ', dst)
-    if os.path.exists(dst):
-        mb = messagebox.askyesno('PDF Renamer', 'A file with this name already exists. Overwrite?')
-        if mb:
-            os.remove(dst)
-            os.rename(src, dst)
-            messagebox.showinfo('PDF Renamer', 'The file was renamed.')
+    # Check for dot in new name (no dots - to make sure the .pdf extension is part of the new 
+    # name since it is added automatically)
+    s = new_var.get()
+    if not '.' in s:
+        if os.path.exists(dst):
+            mb = messagebox.askyesno('PDF Renamer', 'A file with this name already exists. Overwrite?')
+            if mb:
+                os.remove(dst)
+                os.rename(src, dst)
+                messagebox.showinfo('PDF Renamer', 'The file was renamed.')
+            else:
+                new_var.set('')
+                messagebox.showinfo('PDF Renamer', 'File name was not changed.')
         else:
+            os.rename(src, dst)
             new_var.set('')
-            messagebox.showinfo('PDF Renamer', 'File name was not changed.')
+            messagebox.showinfo('PDF Renamer', 'The file was renamed.')
     else:
-        os.rename(src, dst)
-        new_var.set('')
-        messagebox.showinfo('PDF Renamer', 'The file was renamed.')
-        #next()
-
+        messagebox.showinfo('PDF Renamer', 'Sorry, new name cannot contain a dot. Try again.')
+        # Set new entry back to current name (start over)
+        new_var.set(name[0:len(name)-4])
+        
 # Initialize tk
 root= tk.Tk()
 style = ttk.Style(root)
