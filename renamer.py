@@ -1,7 +1,6 @@
 import os.path
 import os
 import glob
-#from sys import pycache_prefix
 import tkinter as tk
 from tkinter import Tk, Toplevel, messagebox
 from tkinter import filedialog as fd
@@ -11,25 +10,29 @@ import fitz
 from PIL import Image, ImageTk
 from fitz.fitz import Widget
 
+
 # Create flag to tell the next function if it is seeing a request from the back button
 def back():
     root.back = True
     next()
 
+# go back to the start window
 def retern():
+    # Check whether 'entry_new' has changed and if so give option of saving with the new name
     if not (new_var.get() == root.file_name or new_var.get() == ''):
         mb = messagebox.askyesno("PDF Renamer", "You entered a new file name. Do you want to save it?")
         if not mb:
+            # Reverse the changes to 'entry_new' and restart to retern
             new_var.set(root.file_name)
             retern()
         else:
             save()
     else:
-        # Reset the starting parameters so that the program can be restarted without quitting
+        # Reset the starting parameters
         root.counter = 0
         root.pathname = ''
         root.file_list = []
-        # Destroy existing toplevels to prevent accumulation
+        # Destroy existing toplevels to prevent them from accumulating
         for widget in root.winfo_children():
             if isinstance(widget, tk.Toplevel):
                 widget.destroy()
@@ -46,8 +49,10 @@ def quit():
     root.destroy()
 
 def next():
+    # Check whether 'entry_new' has changed and if so give option of saving with the new name
     if not (new_var.get() == root.file_name or new_var.get() == ''):
         mb = messagebox.askyesno("PDF Renamer", "You entered a new file name. Do you want to save it?")
+        # Reverse the changes to 'entry_new' and restart next
         if not mb:
             new_var.set(root.file_name)
             next()
@@ -56,7 +61,7 @@ def next():
     else:
         # Activate back button 
         btn_back["state"] = "normal"
-        # Destroy existing toplevels to prevent accumulation
+        # Destroy existing toplevels to prevent them from accumulating.
         for widget in root.winfo_children():
             if isinstance(widget, tk.Toplevel):
                 widget.destroy()
@@ -70,7 +75,9 @@ def next():
             if root.counter <= 0:
                 root.counter == 0
             else:
+                # Decrement root.counter by 2, one for the increment above and one to go back
                 root.counter -= 2
+            # Back button should only be active if root.counter is 1 or higher
             if root.counter > 0:
                 # Activate back button 
                 btn_back['state'] = 'normal'
@@ -84,9 +91,10 @@ def next():
         else:
             # Create file_name (without the pdf extension)
             root.file_name = root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])-4]
-            # Populate text field of lbl_current_is
-            lbl_current_is.config(
-                text = root.file_name + '.pdf' + '   #' + str(root.counter+1) + '/' + str(root.pdf_count)
+            # Populate text field of lbl_file_name_is
+            lbl_file_is.config(
+                text = '(#' + str(root.counter+1) + '/' + str(root.pdf_count) + ')  ' + \
+                root.file_name
             )
             # Populate text field of ent_new
             new_var.set(root.file_name)
@@ -144,9 +152,9 @@ Click <Start> to try again or <Quit> to exit.')
                 )
                 # Create file_name (without the pdf extension)
                 root.file_name = root.file_list[0][len(root.pathname)+1:len(root.file_list[0])-4]
-                # Populate text field of lbl_current_is
-                lbl_current_is.config(
-                    text = root.file_name + '.pdf' + '   #1' + '/' + str(root.pdf_count)
+                # Populate text field of lbl_file_is
+                lbl_file_is.config(
+                    text = '(#1' + '/' + str(root.pdf_count) + ')  ' + root.file_name
                 )
                 # Populate text field of ent_new
                 new_var.set(root.file_name)
@@ -214,7 +222,7 @@ style = ttk.Style(root)
 style.theme_use('alt')
 #root.eval('tk::PlaceWindow . center')
 root.title("PDF Renamer")
-root.geometry("+%d+%d" % (50, 100))
+root.geometry("+%d+%d" % (50, 150))
 root.resizable(False, False)
 root.rowconfigure(0, weight=1)
 root.rowconfigure(1, weight=1)
@@ -271,8 +279,6 @@ frm_top_btns.grid(
     row=1,
     column=0
 )
-frm_top.rowconfigure(0, weight=1)
-frm_top.columnconfigure(0, weight=1)
 
 btn_start = ttk.Button(
     master=frm_top_btns,
@@ -302,7 +308,7 @@ btn_top_quit.grid(
     pady=(0, 15),
     sticky='w'
 )
-
+########################################################################
 # Create bottom frame for viewing and renaming the pdf files  
 frm_bottom = tk.Frame(
     master=root,
@@ -313,43 +319,92 @@ frm_bottom = tk.Frame(
 frm_bottom.rowconfigure(0, weight=1)
 frm_bottom.columnconfigure(0, weight=1)
 
-lbl_current=tk.Label(
+# # Create frame for file_name label
+# frm_file_name = tk.Frame(
+#     master=frm_bottom,
+#     relief='flat',
+#     background='#99ccff'
+# )
+# frm_file_name.grid(
+#     row=0,
+#     column=0
+# )
+
+lbl_file_name = tk.Label(
     master=frm_bottom,
     background="#99ccff",
-    font=('Arial', 16),
+    font=('Arial', 16, 'underline'),
+    anchor='w',
     text='File name:'
 )
-lbl_current.grid(
+lbl_file_name.grid(
     row=0,
     column=0,
-    padx=5,
+    padx=50,
     pady=(10, 0),
-    sticky='nsew'
+    sticky='w'
 )
 
-lbl_current_is = tk.Label(
+# lbl_file_name_right = tk.Label(
+#     frm_file_name, 
+#     text='(#' + str(root.counter+1) + '/' + str(root.pdf_count) + ')',
+#     #bg='#99ccff',
+#     font=('Arial', 18)
+# )
+# lbl_file_name_right.grid(row=0, column=1, pady=(10, 0), sticky='w')
+
+# Create frame for file_is entry
+frm_file_is = tk.Frame(
     master=frm_bottom,
+    relief='flat',
+    background='#99ccff'
+)
+frm_file_is.grid(
+    row=1,
+    column=0
+)
+
+lbl_file_is = tk.Label(
+    master=frm_file_is,
     background='#99ccff',
-    foreground='#ff0000',
+    # foreground='#ff0000',
+    font=('Arial', 16),
+    width=50,
+    anchor='e'
+)
+lbl_file_is.grid(
+    row=0, 
+    column=0,
+    pady=(0,10),
+    sticky='e'
+)
+
+lbl_file_is_right = tk.Label(
+    frm_file_is, 
+    text='.pdf',
+    bg='#99ccff',
+    anchor='w',
     font=('Arial', 16)
 )
-lbl_current_is.grid(
-    row=1, 
-    column=0,
-    ipadx=7,
-    pady=(2,10)
+lbl_file_is_right.grid(
+    row=0, 
+    column=1, 
+    pady=(0, 10),
+    sticky='w'
 )
 
 lbl_new = tk.Label(
     master=frm_bottom,
     background="#99ccff",
     text="Change to:",
-    font=("Arial", 16)
+    anchor='w',
+    font=('Arial', 16, 'underline')
 )
 lbl_new.grid(
     row=2,
     column=0,
-    padx=5
+    padx=50,
+    sticky='w'
 )
 
 # Create frame for new name entry
@@ -361,33 +416,35 @@ frm_new = tk.Frame(
 frm_new.grid(
     row=3,
     column=0,
-    ipadx=5,
-    ipady=5
 )
 
 ent_new=tk.Entry(
     master=frm_new,
-    relief="flat",
+    relief="ridge",
+    borderwidth=0,
+    highlightthickness=0,
+    bg='gainsboro',
     textvariable=new_var,
     font=('Arial', 16),
+    foreground='#ff0000',
     justify='right',
     width=50
 )
 ent_new.grid(
     row=0,
     column=0,
-    padx=(10,0),
     pady=(2,10),
     sticky='e'
 )
 
-lbl_new_ent = tk.Label(
+ent_new_right = tk.Label(
     master=frm_new,
     text='.pdf',
     font=('Arial', 16),
-    background='#99ccff'
+    background='#99ccff',
+    anchor='w'
 )
-lbl_new_ent.grid(
+ent_new_right.grid(
     row=0,
     column=1,
     pady=(2, 10),
@@ -450,7 +507,6 @@ btn_back.grid(
     padx=10,
     ipadx=10,
     pady=5,
-    #sticky="e"
 )
 
 btn_next.grid(
@@ -459,7 +515,6 @@ btn_next.grid(
     padx=10,
     ipadx=10,
     pady=5,
-    #sticky="ns"
 )
 
 btn_return.grid(
