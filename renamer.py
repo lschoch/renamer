@@ -93,12 +93,25 @@ def next():
             root.file_name = root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])-4]
             # Populate text field of lbl_file_name_is
             lbl_file_is.config(
-                text = '(#' + str(root.counter+1) + '/' + str(root.pdf_count) + ')  ' + \
-                root.file_name
+                #text = '(#' + str(root.counter+1) + '/' + str(root.pdf_count) + ')  ' + \
+                text = root.file_name
             )
+            
+            # # Update file file counter
+            # lbl_counter.config(
+            #     text='#' + str(root.counter+1) + '/' + str(root.pdf_count)
+            # )
             # Populate text field of ent_new
             new_var.set(root.file_name)
-            # Create the next pdf image (first page)
+            # Hide scroll bar if text doesn't fill ent_new
+            print (ent_new.xview())
+            if ent_new.xview() == (0.0, 1.0):
+                print('len < widthe')
+                ent_new_scroll.grid_remove()
+            else:
+                ent_new_scroll.grid()
+
+            # Create the pdf image (first page)
             location = root.file_list[root.counter]
             # Get the next pdf
             doc = fitz.open(location)
@@ -147,15 +160,18 @@ Click <Start> to try again or <Quit> to exit.')
                 #show frm_bottom
                 frm_bottom.grid(
                     row=1,
-                    column=0,
-                    sticky="nsew"
+                    column=0
                 )
                 # Create file_name (without the pdf extension)
                 root.file_name = root.file_list[0][len(root.pathname)+1:len(root.file_list[0])-4]
                 # Populate text field of lbl_file_is
                 lbl_file_is.config(
-                    text = '(#1' + '/' + str(root.pdf_count) + ')  ' + root.file_name
+                    text = root.file_name
                 )
+                # # Update file file counter
+                # lbl_counter.config(
+                #     text='#' + str(root.counter+1) + '/' + str(root.pdf_count)
+                # )
                 # Populate text field of ent_new
                 new_var.set(root.file_name)
                 # Create the pdf image (first page)
@@ -185,7 +201,6 @@ Click <Start> to try again or <Quit> to exit.')
                 lbl_pdf = tk.Label(master=tl_start, image=tkimage)
                 lbl_pdf.image = tkimage
                 lbl_pdf.pack(fill="both", expand=1)
-                
     else:
         messagebox.showinfo('PDF Renamer', 'That is not a valid directory. Try again.')
 
@@ -219,14 +234,14 @@ def save():
 # Initialize tk
 root= tk.Tk()
 style = ttk.Style(root)
-style.theme_use('alt')
+style.theme_use('clam')
+style.configure('Horizontal.TScrollBar', troughcolor='#ff0000')
 #root.eval('tk::PlaceWindow . center')
 root.title("PDF Renamer")
 root.geometry("+%d+%d" % (50, 150))
 root.resizable(False, False)
 root.rowconfigure(0, weight=1)
-root.rowconfigure(1, weight=1)
-root.columnconfigure(0, minsize=600, weight=1)
+root.columnconfigure(0, weight=1)
 root.counter = 0
 root.pdf_count = 0
 root.pathname = ''
@@ -242,7 +257,7 @@ print('path: ' + str(os.getcwd()))
 #f Create top frame for getting started
 frm_top = tk.Frame(
     master=root,
-    relief="sunken",
+    relief="groove",
     borderwidth=2,
     background="#99ccff"
 )
@@ -272,7 +287,6 @@ lbl_start.grid(
 # Create frame for start and quit buttons
 frm_top_btns = tk.Frame(
     master=frm_top,
-    relief="flat",
     background="#99ccff"
 )
 frm_top_btns.grid(
@@ -286,7 +300,7 @@ btn_start = ttk.Button(
     text="Start",
     command=lambda:start()
 )
-btn_start.focus()
+#btn_start.focus()
 btn_start.grid(
     row=1,
     column=0,
@@ -313,143 +327,108 @@ btn_top_quit.grid(
 frm_bottom = tk.Frame(
     master=root,
     background="#99ccff",
-    relief="sunken",
+    relief='groove',
     borderwidth=2
 )
 frm_bottom.rowconfigure(0, weight=1)
 frm_bottom.columnconfigure(0, weight=1)
-
-# # Create frame for file_name label
-# frm_file_name = tk.Frame(
-#     master=frm_bottom,
-#     relief='flat',
-#     background='#99ccff'
-# )
-# frm_file_name.grid(
-#     row=0,
-#     column=0
-# )
 
 lbl_file_name = tk.Label(
     master=frm_bottom,
     background="#99ccff",
     font=('Arial', 16, 'underline'),
     anchor='w',
-    text='File name:'
+    width=50,
+    text='Current file name:'
 )
 lbl_file_name.grid(
     row=0,
     column=0,
-    padx=50,
+    padx=8,
     pady=(10, 0),
-    sticky='w'
-)
-
-# lbl_file_name_right = tk.Label(
-#     frm_file_name, 
-#     text='(#' + str(root.counter+1) + '/' + str(root.pdf_count) + ')',
-#     #bg='#99ccff',
-#     font=('Arial', 18)
-# )
-# lbl_file_name_right.grid(row=0, column=1, pady=(10, 0), sticky='w')
-
-# Create frame for file_is entry
-frm_file_is = tk.Frame(
-    master=frm_bottom,
-    relief='flat',
-    background='#99ccff'
-)
-frm_file_is.grid(
-    row=1,
-    column=0
-)
-
-lbl_file_is = tk.Label(
-    master=frm_file_is,
-    background='#99ccff',
-    # foreground='#ff0000',
-    font=('Arial', 16),
-    width=50,
-    anchor='e'
-)
-lbl_file_is.grid(
-    row=0, 
-    column=0,
-    pady=(0,10),
     sticky='e'
 )
 
-lbl_file_is_right = tk.Label(
-    frm_file_is, 
-    text='.pdf',
-    bg='#99ccff',
-    anchor='w',
-    font=('Arial', 16)
+lbl_file_is = tk.Label(
+    master=frm_bottom,
+    background='#99ccff',
+    foreground='#ff0000',
+    font=('Arial', 16),
+    width=50,
+    anchor='w'
 )
-lbl_file_is_right.grid(
-    row=0, 
-    column=1, 
-    pady=(0, 10),
-    sticky='w'
+lbl_file_is.grid(
+    row=1, 
+    column=0,
+    padx=8,
+    pady=(0,10),
+    sticky='e'
 )
 
 lbl_new = tk.Label(
     master=frm_bottom,
     background="#99ccff",
-    text="Change to:",
+    width=50,
+    text="Change name to:",
     anchor='w',
     font=('Arial', 16, 'underline')
 )
 lbl_new.grid(
     row=2,
     column=0,
-    padx=50,
-    sticky='w'
+    padx=8,
+    sticky='e'
 )
 
-# Create frame for new name entry
-frm_new = tk.Frame(
+# Create frame to contain ent_new and scroll bar
+frm_ent_new = tk.Frame(
     master=frm_bottom,
-    relief='flat',
     background='#99ccff'
 )
-frm_new.grid(
+frm_ent_new.grid(
     row=3,
     column=0,
+    padx=8,
+    pady=(0,10),
+    sticky='e'
 )
 
+# Add new file name - ent_new
 ent_new=tk.Entry(
-    master=frm_new,
-    relief="ridge",
+    master=frm_ent_new,
+    relief="flat",
     borderwidth=0,
-    highlightthickness=0,
+    highlightthickness=2,
+    highlightbackground='gainsboro',
     bg='gainsboro',
     textvariable=new_var,
     font=('Arial', 16),
     foreground='#ff0000',
-    justify='right',
+    justify='left',
     width=50
 )
 ent_new.grid(
     row=0,
     column=0,
-    pady=(2,10),
-    sticky='e'
+    #padx=8,
+    #sticky='e'
 )
 
-ent_new_right = tk.Label(
-    master=frm_new,
-    text='.pdf',
-    font=('Arial', 16),
-    background='#99ccff',
-    anchor='w'
+# Add scrollbar for ent_new
+ent_new_scroll = tk.Scrollbar(
+    master=frm_ent_new,
+    orient='horizontal',
+    command=ent_new.xview,
+    troughcolor='gainsboro'
 )
-ent_new_right.grid(
-    row=0,
-    column=1,
-    pady=(2, 10),
-    sticky='w'
+ent_new_scroll.grid(
+    row=1,
+    column=0,
+    #padx=8,
+    #pady=(0,10)
+    sticky='ew'
 )
+ent_new.config(xscrollcommand=ent_new_scroll.set)
 
 # Create frame for bottom buttons
 frm_bottom_btns=tk.Frame(
@@ -458,9 +437,10 @@ frm_bottom_btns=tk.Frame(
     background="#99ccff"
 )
 frm_bottom_btns.grid(
-    row=4,
+    row=5,
     column=0,
-    padx=5,
+    columnspan=2,
+    padx=8,
     pady=(5, 10)
 )
 
