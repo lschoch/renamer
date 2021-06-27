@@ -53,7 +53,7 @@ def quit():
 
 def next():
     # Check whether 'entry_new' has changed and if so give option of saving with the new name
-    if new_var.get() != root.file_name and new_var.get() != '':
+    if new_var.get() != root.file_name and new_var.get() != '' and root.file_name != '':
         mb = messagebox.askyesno("PDF Renamer", "You entered a new file name. Do you want to save it?")
         if not mb:
             # Reverse the changes to 'entry_new' and restart next()
@@ -131,7 +131,7 @@ def next():
             tkimage = ImageTk.PhotoImage(img)
             # Create top-level to view the pdf
             tl_next = tk.Toplevel(root, name='tl_next_name')
-            tl_next.geometry("%dx%d+%d+%d" % (650, 790, root.winfo_x() + 675, root.winfo_y() + 50))
+            tl_next.geometry("%dx%d+%d+%d" % (650, 790, root.winfo_x() + 500, root.winfo_y() + 50))
             tl_next.title('First Page')
             lbl_pdf = tk.Label(master=tl_next, image=tkimage)
             lbl_pdf.image = tkimage
@@ -162,7 +162,7 @@ Click <Start> to try again or <Quit> to exit.')
         messagebox.showinfo('PDF Renamer', 'That is not a valid directory. Try again.')
 
 def save():
-    # name = current file name
+    # Name = current file name
     name = root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])]
     src = root.pathname + '/' + name
     dst = root.pathname + '/' + new_var.get() + '.pdf'
