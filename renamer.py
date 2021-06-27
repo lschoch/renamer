@@ -94,7 +94,6 @@ def next():
             root.file_name = root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])-4]
             # Populate text field of lbl_file_name_is and show it
             lbl_file_is.config(
-                #text = '(#' + str(root.counter+1) + '/' + str(root.pdf_count) + ')  ' + \
                 text = root.file_name
             )
             lbl_file_is.grid()
@@ -110,8 +109,11 @@ def next():
                 ent_new_scroll.grid_remove()
             else:
                 ent_new_scroll.grid()
-
-            # Create first pagr of the pdf image.
+            # Hide top frame.
+            frm_top.grid_remove()
+            # Show bottom frame.
+            frm_bottom.grid()
+            # Create first page of the pdf image.
             location = root.file_list[root.counter]
             # Get the next pdf
             doc = fitz.open(location)
@@ -134,6 +136,8 @@ def next():
             lbl_pdf = tk.Label(master=tl_next, image=tkimage)
             lbl_pdf.image = tkimage
             lbl_pdf.pack(fill="both", expand=1)
+            # After creating the toplevel window, force focus back to rootwindow.
+            root.after(10, lambda: root.focus_force())
 
 def start():
     # Use file dialog to select directory
@@ -153,15 +157,6 @@ def start():
 Click <Start> to try again or <Quit> to exit.')    
         else:
             if root.pathname and root.file_list:
-                # Hide top frame.
-                frm_top.grid_remove()
-                # Show bottom frame.
-                frm_bottom.grid(
-                    row=1,
-                    column=0
-                )
-                # Get name of first pdf file in the list (without the pdf extension)
-                root.file_name = root.file_list[0][len(root.pathname)+1:len(root.file_list[0])-4]
                 next()
     else:
         messagebox.showinfo('PDF Renamer', 'That is not a valid directory. Try again.')
@@ -303,8 +298,13 @@ frm_bottom = tk.Frame(
     relief='groove',
     borderwidth=2
 )
+frm_bottom.grid(
+    row=1,
+    column=0
+)
 frm_bottom.rowconfigure(0, weight=1)
 frm_bottom.columnconfigure(0, weight=1)
+frm_bottom.grid_remove()
 
 lbl_counter = tk.Label(
     master=frm_bottom,
