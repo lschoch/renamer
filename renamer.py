@@ -11,27 +11,30 @@ from PIL import Image, ImageTk
 from fitz.fitz import Widget
 
 
-# Create flag to tell the next function if it is seeing a request from the back button
+# Create flag to tell the next function it is seeing a request from the back button
 def back():
     root.back = True
     next()
 
-# go back to the start window
+# Go back to the start window
 def retern():
     # Check whether 'entry_new' has changed and if so give option of saving with the new name
-    if not new_var.get() == root.file_name or new_var.get() == '':
+    if new_var.get() != lbl_file_is['text'] and new_var.get() != '':
         mb = messagebox.askyesno("PDF Renamer", "You entered a new file name. Do you want to save it?")
         if not mb:
             # Reverse the changes to 'entry_new' and restart retern
-            new_var.set(root.file_name)
+            new_var.set(lbl_file_is['text'])
             retern()
         else:
             save()
     else:
         # Reset the starting parameters
-        root.counter = 0
         root.pathname = ''
         root.file_list = []
+        root.file_name = ''
+        root.counter = -1
+        root.pdf_count = 0
+        root.back = False
         # Destroy existing toplevels to prevent them from accumulating
         for widget in root.winfo_children():
             if isinstance(widget, tk.Toplevel):
@@ -50,24 +53,21 @@ def quit():
 
 def next():
     # Check whether 'entry_new' has changed and if so give option of saving with the new name
-    if not (new_var.get() == root.file_name or new_var.get() == ''):
+    if new_var.get() != root.file_name and new_var.get() != '':
         mb = messagebox.askyesno("PDF Renamer", "You entered a new file name. Do you want to save it?")
-        # Reverse the changes to 'entry_new' and restart next
         if not mb:
+            # Reverse the changes to 'entry_new' and restart next()
             new_var.set(root.file_name)
             next()
         else:
             save()
     else:
-        # Activate back button 
-        btn_back["state"] = "normal"
         # Destroy existing toplevels to prevent them from accumulating.
         for widget in root.winfo_children():
             if isinstance(widget, tk.Toplevel):
                 widget.destroy()
         # Increment the counter
         root.counter+=1
-
         # Check whether this call came from the back function
         if root.back:
             # Reset root.back
@@ -77,6 +77,12 @@ def next():
             else:
                 # Decrement root.counter by 2, one for the increment above and one to go back
                 root.counter -= 2
+        # Check whether the last pdf has been viewed 
+        if root.counter >= len(root.file_list):
+            messagebox.showinfo('PDF Renamer', 'No more pdf files in the specified directory!')
+            new_var.set('')
+            retern()
+        else:
             # Back button should only be active if root.counter is 1 or higher
             if root.counter > 0:
                 # Activate back button 
@@ -84,34 +90,28 @@ def next():
             else:
                 # Disable the back button
                 btn_back['state'] = 'disabled'
-        # Check whether the last pdf has been viewed 
-        if root.counter >= len(root.file_list):
-            messagebox.showinfo('PDF Renamer', 'No more pdf files in the specified directory!')
-            retern()
-        else:
-            # Create file_name (without the pdf extension)
+            # Create file_name (exclude the pdf extension name, it is added automatically)
             root.file_name = root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])-4]
-            # Populate text field of lbl_file_name_is
+            # Populate text field of lbl_file_name_is and show it
             lbl_file_is.config(
                 #text = '(#' + str(root.counter+1) + '/' + str(root.pdf_count) + ')  ' + \
                 text = root.file_name
             )
-            
-            # # Update file file counter
-            # lbl_counter.config(
-            #     text='#' + str(root.counter+1) + '/' + str(root.pdf_count)
-            # )
+            lbl_file_is.grid()
+            # Update and show file counter.
+            lbl_counter.config(
+                text='#' + str(root.counter+1) + '/' + str(root.pdf_count)
+            )
+            lbl_counter.grid()
             # Populate text field of ent_new
             new_var.set(root.file_name)
             # Hide scroll bar if text doesn't fill ent_new
-            print (ent_new.xview())
             if ent_new.xview() == (0.0, 1.0):
-                print('len < widthe')
                 ent_new_scroll.grid_remove()
             else:
                 ent_new_scroll.grid()
 
-            # Create the pdf image (first page)
+            # Create first pagr of the pdf image.
             location = root.file_list[root.counter]
             # Get the next pdf
             doc = fitz.open(location)
@@ -129,78 +129,40 @@ def next():
             tkimage = ImageTk.PhotoImage(img)
             # Create top-level to view the pdf
             tl_next = tk.Toplevel(root, name='tl_next_name')
-            tl_next.geometry("%dx%d+%d+%d" % (650, 790, root.winfo_x() + 675, root.winfo_y()))
+            tl_next.geometry("%dx%d+%d+%d" % (650, 790, root.winfo_x() + 675, root.winfo_y() + 50))
             tl_next.title('First Page')
             lbl_pdf = tk.Label(master=tl_next, image=tkimage)
             lbl_pdf.image = tkimage
             lbl_pdf.pack(fill="both", expand=1)
 
 def start():
-    # Disable the back button
-    if btn_back['state'] == 'normal':
-        btn_back['state'] = 'disabled'
     # Use file dialog to select directory
     root.pathname = fd.askdirectory(
         title='Select directory',
         # Start in current working directory
         initialdir='os.getcwd()'
     )
-    # Check for any pdf files in selected directory
+    # Create list of pdf files in the selected directory
     if os.path.isdir(root.pathname):
         root.file_list = glob.glob(root.pathname + '/*.pdf')
-        # Save total number of pdf files in the directory
+        # Save count of pdf files in the directory
         root.pdf_count = len(root.file_list)
+        # Make sure at least one pdf file in the directory
         if root.pdf_count < 1:
             messagebox.showinfo('PDF Renamer', 'There are no pdf files in the specified directory.\n \
 Click <Start> to try again or <Quit> to exit.')    
         else:
             if root.pathname and root.file_list:
-                # Hide top frame
+                # Hide top frame.
                 frm_top.grid_remove()
-                #show frm_bottom
+                # Show bottom frame.
                 frm_bottom.grid(
                     row=1,
                     column=0
                 )
-                # Create file_name (without the pdf extension)
+                # Get name of first pdf file in the list (without the pdf extension)
                 root.file_name = root.file_list[0][len(root.pathname)+1:len(root.file_list[0])-4]
-                # Populate text field of lbl_file_is
-                lbl_file_is.config(
-                    text = root.file_name
-                )
-                # # Update file file counter
-                # lbl_counter.config(
-                #     text='#' + str(root.counter+1) + '/' + str(root.pdf_count)
-                # )
-                # Populate text field of ent_new
-                new_var.set(root.file_name)
-                # Create the pdf image (first page)
-                location = root.file_list[0]
-                doc = fitz.open(location)
-                # Get first page
-                page = doc[0]
-                # Render page as a pixmap (raster)image
-                pix = page.get_pixmap()
-                # Calculate zoom to fit the top-level window width (leaving 5 pixels to a side)
-                zoom = 640 / pix.width
-                mat = fitz.Matrix(zoom, zoom)
-                pix = page.get_pixmap(matrix=mat)
-                # Set the mode depending on alpha
-                mode = "RGBA" if pix.alpha else "RGB"
-                img = Image.frombytes(mode, (pix.width, pix.height), pix.samples)
-                tkimage = ImageTk.PhotoImage(img)
-                # Destroy existing toplevels to prevent accumulation
-                for widget in root.winfo_children():
-                    if isinstance(widget, tk.Toplevel):
-                        widget.destroy()
-                # Create top-level to view the pdf
-                tl_start = tk.Toplevel(root, name='tl_start_name')
-                tl_start.geometry("%dx%d+%d+%d" % (648, 790, root.winfo_x() + 675, root.winfo_y()))
-                tl_start.title('First Page')
-                tl_start.resizable(False, False)
-                lbl_pdf = tk.Label(master=tl_start, image=tkimage)
-                lbl_pdf.image = tkimage
-                lbl_pdf.pack(fill="both", expand=1)
+                next()
     else:
         messagebox.showinfo('PDF Renamer', 'That is not a valid directory. Try again.')
 
@@ -211,14 +173,13 @@ def save():
     dst = root.pathname + '/' + new_var.get() + '.pdf'
     # Check for dot in new name (no dots - primarily to make sure the .pdf extension is part of the new 
     # name since it is added automatically)
-    s = new_var.get()
     if new_var.get()[-4:] == '.pdf':
         messagebox.showinfo('PDF Renamer', 'The ".pdf" extension is added automatically.' \
         ' Do not include it in your new file name.')
         # Set new entry back to current name (start over)
         new_var.set(name[0:len(name)-4])
     else:
-        if os.path.exists(dst):
+        if os.path.exists(dst) and name != new_var.get():
             mb = messagebox.askyesno('PDF Renamer', 'A file with this name already exists. Overwrite?')
             if mb:
                 os.remove(dst)
@@ -231,19 +192,17 @@ def save():
                 )
                 messagebox.showinfo('PDF Renamer', 'The file was renamed.')
             else:
-                # new_var.set('')
                 messagebox.showinfo('PDF Renamer', 'File name was not changed.')
         else:
             os.rename(src, dst)
-            # Update file_list
+            # Update parameters.
             root.file_list[root.counter] = dst
-            # Update text field of lbl_file_is
             lbl_file_is.config(
                 text = new_var.get()
             )
-            # new_var.set('')
+            root.file_name = root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])-4]
             messagebox.showinfo('PDF Renamer', 'The file was renamed.')
-        
+
 # Initialize tk
 root= tk.Tk()
 style = ttk.Style(root)
@@ -255,11 +214,12 @@ root.geometry("+%d+%d" % (50, 150))
 root.resizable(False, False)
 root.rowconfigure(0, weight=1)
 root.columnconfigure(0, weight=1)
-root.counter = 0
+root.counter = -1
 root.pdf_count = 0
 root.pathname = ''
 root.file_list = []
 root.back = False
+root.file_name = ''
 
 # Set variables for text retrieval
 path_var=tk.StringVar()
@@ -287,8 +247,8 @@ lbl_start = tk.Label(
     master=frm_top,
     background="#99ccff",
     font=("Arial", 20),
-    text="Each pdf file in a selected directory is displayed, along with the \noption to rename it. \
-Click <start> to select the directory and let\nthe renaming begin!",
+    text="The first page of each pdf file in a selected directory is displayed, \nwith the option to rename it. \
+Click <start> to a select directory and\nlet the renaming begin!",
     justify="left"
 )
 lbl_start.grid(
@@ -346,6 +306,21 @@ frm_bottom = tk.Frame(
 frm_bottom.rowconfigure(0, weight=1)
 frm_bottom.columnconfigure(0, weight=1)
 
+lbl_counter = tk.Label(
+    master=frm_bottom,
+    background='gainsboro',
+    foreground='#ff0000',
+    font=('Arial', 20),
+    anchor='center'
+)
+lbl_counter.grid(
+    row=0,
+    column=0,
+    padx=8,
+    pady=(10, 0)
+)
+lbl_counter.grid_remove()
+
 lbl_file_name = tk.Label(
     master=frm_bottom,
     background="#99ccff",
@@ -355,10 +330,10 @@ lbl_file_name = tk.Label(
     text='Current file name:'
 )
 lbl_file_name.grid(
-    row=0,
+    row=1,
     column=0,
     padx=8,
-    pady=(10, 0),
+    pady=(0, 0),
     sticky='e'
 )
 
@@ -371,12 +346,13 @@ lbl_file_is = tk.Label(
     anchor='w'
 )
 lbl_file_is.grid(
-    row=1, 
+    row=2, 
     column=0,
     padx=8,
     pady=(0,10),
     sticky='e'
 )
+lbl_file_is.grid_remove()
 
 lbl_new = tk.Label(
     master=frm_bottom,
@@ -387,7 +363,7 @@ lbl_new = tk.Label(
     font=('Arial', 16, 'underline')
 )
 lbl_new.grid(
-    row=2,
+    row=3,
     column=0,
     padx=8,
     sticky='e'
@@ -396,13 +372,16 @@ lbl_new.grid(
 # Create frame to contain ent_new and scroll bar
 frm_ent_new = tk.Frame(
     master=frm_bottom,
+    borderwidth=1,
+    highlightthickness=1,
+    highlightcolor='black',
     background='#99ccff'
 )
 frm_ent_new.grid(
-    row=3,
+    row=4,
     column=0,
     padx=8,
-    pady=(0,10),
+    pady=(2,10),
     sticky='e'
 )
 
@@ -411,8 +390,7 @@ ent_new=tk.Entry(
     master=frm_ent_new,
     relief="flat",
     borderwidth=0,
-    highlightthickness=2,
-    highlightbackground='gainsboro',
+    highlightthickness=0,
     bg='gainsboro',
     textvariable=new_var,
     font=('Arial', 16),
@@ -423,8 +401,6 @@ ent_new=tk.Entry(
 ent_new.grid(
     row=0,
     column=0,
-    #padx=8,
-    #sticky='e'
 )
 
 # Add scrollbar for ent_new
@@ -437,8 +413,6 @@ ent_new_scroll = tk.Scrollbar(
 ent_new_scroll.grid(
     row=1,
     column=0,
-    #padx=8,
-    #pady=(0,10)
     sticky='ew'
 )
 ent_new.config(xscrollcommand=ent_new_scroll.set)
