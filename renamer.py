@@ -248,7 +248,7 @@ lbl_start = tk.Label(
     background="#99ccff",
     font=("Arial", 20),
     text="The first page of each pdf file in a selected directory is displayed, \nwith the option to rename it. \
-Click <start> to a select directory and\nlet the renaming begin!",
+Click <start> to select a directory and\nlet the renaming begin!",
     justify="left"
 )
 lbl_start.grid(
@@ -295,7 +295,7 @@ btn_top_quit.grid(
     pady=(0, 15),
     sticky='w'
 )
-########################################################################
+
 # Create bottom frame for viewing and renaming the pdf files  
 frm_bottom = tk.Frame(
     master=root,
