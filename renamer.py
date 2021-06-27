@@ -166,8 +166,8 @@ def save():
     name = root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])]
     src = root.pathname + '/' + name
     dst = root.pathname + '/' + new_var.get() + '.pdf'
-    # Check for dot in new name (no dots - primarily to make sure the .pdf extension is part of the new 
-    # name since it is added automatically)
+    # Check whether new name ends with '.pdf'. The file extension should not be included,
+    # since it is added automatically.
     if new_var.get()[-4:] == '.pdf':
         messagebox.showinfo('PDF Renamer', 'The ".pdf" extension is added automatically.' \
         ' Do not include it in your new file name.')
