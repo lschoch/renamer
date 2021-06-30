@@ -11,12 +11,12 @@ This project consists of three files: the program file is named "PDF_renamer.py"
 \
 When the program is started, an introductory screen is displayed:
 
-<img src="/images/screen%20shot_1.png" alt="introductory screen">
+<img src="images/screen_shot_1.png" alt="introductory screen">
 
 \
 Clicking start takes the user to a file dialog where he or she can select the directory that contains the pdf file(s) of interest. After the directory is selected, the following screen is displayed which allows the user to iterate through each file with the option of renaming:
 
-
+<img src="images/screen_shot_3.png" alt="pdf display">
 
 \
 To create "PDF_renamer.py" I had to familiarize myself with three libraries previously unknown to me: Tkinter, Pillow and PyMuPDF. This alone required a considerable investment of time and countless Google searches along the way, a process all too familiar to this novice software developer.
