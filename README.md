@@ -1,4 +1,4 @@
-# 📂      PDF renamer<span style="font-size:1px;">&copy;</span>      ⏱️
+# 📂      PDF renamer&copy;      ⏱️
 ### A desktop application to quickly view and rename the pdf files in a user-selected directory.
 #### Video Demo:
 #### GitHub: https://github.com/lschoch/PDF_renamer.git
