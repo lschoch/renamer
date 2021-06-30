@@ -1,4 +1,5 @@
 /.vscode
+/.DS_Store
 snippets.txt
 snippets.py
 samples.py
