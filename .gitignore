@@ -1,6 +1,6 @@
 /.vscode
 /.DS_Store
-/images.DS_Store
+images/.DS_Store
 snippets.txt
 snippets.py
 samples.py
