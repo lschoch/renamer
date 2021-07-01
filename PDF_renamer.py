@@ -132,7 +132,7 @@ def next():
             # Create top-level to view the pdf
             tl_next = tk.Toplevel(root, name='tl_next_name')
             tl_next.geometry("%dx%d+%d+%d" % (650, 790, root.winfo_x() + 500, root.winfo_y() + 50))
-            tl_next.title('PDF Renamer')
+            tl_next.title('PDF Renamer - first page of current file')
             lbl_pdf = tk.Label(master=tl_next, image=tkimage)
             lbl_pdf.image = tkimage
             lbl_pdf.pack(fill="both", expand=1)
@@ -329,7 +329,7 @@ lbl_counter.grid_remove()
 lbl_file_name = tk.Label(
     master=frm_bottom,
     background="#99ccff",
-    font=('Arial', 16, 'underline'),
+    font=('Arial', 16, 'italic'),
     anchor='w',
     width=50,
     text='Current file name:'
@@ -365,7 +365,7 @@ lbl_new = tk.Label(
     width=50,
     text="Change name to:",
     anchor='w',
-    font=('Arial', 16, 'underline')
+    font=('Arial', 16, 'italic')
 )
 lbl_new.grid(
     row=3,
