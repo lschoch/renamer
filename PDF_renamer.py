@@ -132,7 +132,7 @@ def next():
             # Create top-level to view the pdf
             tl_next = tk.Toplevel(root, name='tl_next_name')
             tl_next.geometry("%dx%d+%d+%d" % (650, 790, root.winfo_x() + 500, root.winfo_y() + 50))
-            tl_next.title('First Page')
+            tl_next.title('PDF Renamer')
             lbl_pdf = tk.Label(master=tl_next, image=tkimage)
             lbl_pdf.image = tkimage
             lbl_pdf.pack(fill="both", expand=1)
@@ -200,7 +200,7 @@ def save():
                 root.file_name = root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])-4]
                 messagebox.showinfo('PDF Renamer', 'The file was renamed.')
     else:
-        messagebox.showinfo('PDF renamer', 'New name is same as current name. \
+        messagebox.showinfo('PDF Renamer', 'New name is same as current name. \
 No changes were made.')
 
 # Initialize tk
