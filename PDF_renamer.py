@@ -166,37 +166,42 @@ def save():
     name = root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])]
     src = root.pathname + '/' + name
     dst = root.pathname + '/' + new_var.get() + '.pdf'
-    # Check whether new name ends with '.pdf'. The file extension should not be included,
-    # since it is added automatically.
-    if new_var.get()[-4:] == '.pdf':
-        messagebox.showinfo('PDF Renamer', 'The ".pdf" extension is added automatically.' \
-        ' Do not include it in your new file name.')
-        # Set new entry back to current name (start over)
-        new_var.set(name[0:len(name)-4])
-    else:
-        if os.path.exists(dst) and name != new_var.get():
-            mb = messagebox.askyesno('PDF Renamer', 'A file with this name already exists. Overwrite?')
-            if mb:
-                os.remove(dst)
+    # If src and dst are the same, exit with no changes made
+    if src != dst:
+        # Check whether new name ends with '.pdf'. The file extension should not be included,
+        # since it is added automatically.
+        if new_var.get()[-4:] == '.pdf':
+            messagebox.showinfo('PDF Renamer', 'The ".pdf" extension is added automatically.' \
+            ' Do not include it in your new file name.')
+            # Set new entry back to current name (start over)
+            new_var.set(name[0:len(name)-4])
+        else:
+            if os.path.exists(dst) and name != new_var.get() + '.pdf':
+                mb = messagebox.askyesno('PDF Renamer', 'A file with this name already exists. Overwrite?')
+                if mb:
+                    os.remove(dst)
+                    os.rename(src, dst)
+                    # Update file_list
+                    root.file_list[root.counter] = dst
+                    # Update text field of lbl_file_is
+                    lbl_file_is.config(
+                        text = new_var.get()
+                    )
+                    messagebox.showinfo('PDF Renamer', 'The file was renamed.')
+                else:
+                    messagebox.showinfo('PDF Renamer', 'File name was not changed.')
+            else:
                 os.rename(src, dst)
-                # Update file_list
+                # Update parameters.
                 root.file_list[root.counter] = dst
-                # Update text field of lbl_file_is
                 lbl_file_is.config(
                     text = new_var.get()
                 )
+                root.file_name = root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])-4]
                 messagebox.showinfo('PDF Renamer', 'The file was renamed.')
-            else:
-                messagebox.showinfo('PDF Renamer', 'File name was not changed.')
-        else:
-            os.rename(src, dst)
-            # Update parameters.
-            root.file_list[root.counter] = dst
-            lbl_file_is.config(
-                text = new_var.get()
-            )
-            root.file_name = root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])-4]
-            messagebox.showinfo('PDF Renamer', 'The file was renamed.')
+    else:
+        messagebox.showinfo('PDF renamer', 'New name is same as current name. \
+No changes were made.')
 
 # Initialize tk
 root= tk.Tk()
