@@ -4,7 +4,7 @@
 #### GitHub: https://github.com/lschoch/PDF_renamer.git
 #### Description:
 
-*PDF renamer*<sup>&copy;</sup> is a Python script that allows users to iterate through each pdf file in a directory of their choosing. The first page of the file is displayed and this image can be used in deciding whether to rename the file, and what the new name will be, based on the file contents. The GUI is implemented with the Tkinter library and rendering of the pdf images uses the PyMuPDF and Pillow libraries. 
+*PDF renamer*<sup>&copy;</sup> is a Python script that allows users to iterate through each pdf file in a directory of their choosing. The first page of the file is displayed and this image can be used in deciding whether to rename the file, and what the new name will be, based on the file contents. The GUI is implemented with the *Tkinter* library and rendering of the pdf images uses the *PyMuPDF* and *Pillow* libraries. 
 
 This project consists of three files: the program file is named *PDF renamer.py*. Dependencies are listed in *requirements.txt* and finally there is the *README.md* file which is this document. There is also a folder which contains the images for *README.md*.
 
