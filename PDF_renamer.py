@@ -131,7 +131,9 @@ def next():
             tkimage = ImageTk.PhotoImage(img)
             # Create top-level to view the pdf
             tl_next = tk.Toplevel(root, name='tl_next_name')
-            tl_next.geometry("%dx%d+%d+%d" % (650, 790, root.winfo_x() + 500, root.winfo_y() + 50))
+            root.update_idletasks()
+            # Set geometry of top level window, x coordinate = x of root + width of root + 10 for small gap
+            tl_next.geometry("%dx%d+%d+%d" % (650, 790, root.winfo_x() + root.winfo_width() + 10, root.winfo_y()))
             tl_next.title('PDF Renamer - first page of current file')
             lbl_pdf = tk.Label(master=tl_next, image=tkimage)
             lbl_pdf.image = tkimage
@@ -210,7 +212,7 @@ style.theme_use('clam')
 style.configure('Horizontal.TScrollBar', troughcolor='#ff0000')
 #root.eval('tk::PlaceWindow . center')
 root.title("PDF Renamer")
-root.geometry("+%d+%d" % (50, 150))
+root.geometry("+%d+%d" % (10, 10))
 root.resizable(False, False)
 root.rowconfigure(0, weight=1)
 root.columnconfigure(0, weight=1)
@@ -246,7 +248,7 @@ frm_top.columnconfigure(0, weight=1)
 lbl_start = tk.Label(
     master=frm_top,
     background="#99ccff",
-    font=("Arial", 20),
+    font=("Arial", 14),
     text="The first page of each pdf file in a selected directory is displayed, \nwith the option to rename it. \
 Click <start> to select a directory and\nlet the renaming begin!",
     justify="left"
