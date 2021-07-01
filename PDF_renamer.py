@@ -158,7 +158,7 @@ Click <Start> to try again or <Quit> to exit.')
         else:
             if root.pathname and root.file_list:
                 next()
-    else:
+    elif root.pathname != '':
         messagebox.showinfo('PDF Renamer', 'That is not a valid directory. Try again.')
 
 def save():
