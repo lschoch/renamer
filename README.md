@@ -1,6 +1,6 @@
 # 📂      *PDF renamer*      ⏱️
 ### A desktop application to quickly view and rename the pdf files in a user-selected directory.
-#### Video Demo:
+#### Video Demo: https://youtu.be/LIAFMNDTzlc
 #### GitHub: https://github.com/lschoch/PDF_renamer.git
 #### Description:
 
