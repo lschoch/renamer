@@ -500,4 +500,5 @@ btn_return.grid(
     sticky="w"
 )
 
-root.mainloop()
+if __name__ == '__main__':
+    root.mainloop()
