@@ -462,7 +462,7 @@ btn_next = ttk.Button(
 btn_return = ttk.Button(
     master=frm_bottom_btns,
     width=5,
-    text="Return",
+    text="Home",
     command=lambda:retern()
 )
 
