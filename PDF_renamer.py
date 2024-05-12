@@ -8,7 +8,7 @@ from tkinter.constants import END
 import tkinter.ttk as ttk
 import fitz
 from PIL import Image, ImageTk
-from fitz.fitz import Widget
+#from fitz.fitz import Widget
 
 
 # Create flag to tell the next function it is seeing a request from the back button
@@ -189,7 +189,8 @@ def save():
                     lbl_file_is.config(
                         text = new_var.get()
                     )
-                    messagebox.showinfo('PDF Renamer', 'The file was renamed.')
+                    # messagebox.showinfo('PDF Renamer', 'The file was renamed.')
+                    next()
                 else:
                     messagebox.showinfo('PDF Renamer', 'File name was not changed.')
             else:
@@ -200,7 +201,8 @@ def save():
                     text = new_var.get()
                 )
                 root.file_name = root.file_list[root.counter][len(root.pathname)+1:len(root.file_list[root.counter])-4]
-                messagebox.showinfo('PDF Renamer', 'The file was renamed.')
+                # messagebox.showinfo('PDF Renamer', 'The file was renamed.')
+                next()
     else:
         messagebox.showinfo('PDF Renamer', 'New name is same as current name. \
 No changes were made.')
@@ -227,7 +229,7 @@ root.file_name = ''
 path_var=tk.StringVar()
 new_var=tk.StringVar()
 
-print('path: ' + str(os.getcwd()))
+# print('path: ' + str(os.getcwd()))
 
 #f Create top frame for getting started
 frm_top = tk.Frame(
