@@ -71,6 +71,25 @@ def quit():
     root.destroy()
 
 
+def create_pdf_image(counter):
+    # Create first page of the pdf image.
+    location = root.file_list[counter]
+    # Get the next pdf
+    doc = fitz.open(location)
+    # Get first page
+    page = doc[0]
+    # Render page as a pixmap (raster)image
+    pix = page.get_pixmap()
+    # Calculate zoom to fit the top-level window width
+    # (leaving 5 pixels to a side)
+    zoom = 640 / pix.width
+    mat = fitz.Matrix(zoom, zoom)
+    pix = page.get_pixmap(matrix=mat)
+    # Set the mode depending on alpha
+    mode = "RGBA" if pix.alpha else "RGB"
+    return Image.frombytes(mode, (pix.width, pix.height), pix.samples)
+
+
 def next():
     # Check whether 'entry_new' has changed and if so give option of saving
     # with the new name
@@ -145,22 +164,7 @@ def next():
             frm_top.grid_remove()
             # Show bottom frame.
             frm_bottom.grid()
-            # Create first page of the pdf image.
-            location = root.file_list[root.counter]
-            # Get the next pdf
-            doc = fitz.open(location)
-            # Get first page
-            page = doc[0]
-            # Render page as a pixmap (raster)image
-            pix = page.get_pixmap()
-            # Calculate zoom to fit the top-level window width
-            # (leaving 5 pixels to a side)
-            zoom = 640 / pix.width
-            mat = fitz.Matrix(zoom, zoom)
-            pix = page.get_pixmap(matrix=mat)
-            # Set the mode depending on alpha
-            mode = "RGBA" if pix.alpha else "RGB"
-            img = Image.frombytes(mode, (pix.width, pix.height), pix.samples)
+            img = create_pdf_image(root.counter)
             tkimage = ImageTk.PhotoImage(img)
             # Create top-level to view the pdf
             tl_next = tk.Toplevel(root, name="tl_next_name")
