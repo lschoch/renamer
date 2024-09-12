@@ -6,6 +6,7 @@ from tkinter import filedialog as fd
 from tkinter import messagebox, ttk
 
 import fitz
+import icecream as ic  # noqa: F401
 from PIL import Image, ImageTk
 
 
@@ -39,12 +40,11 @@ def return_():
         root.counter = -1
         root.pdf_count = 0
         root.back = False
-        # Destroy existing toplevels to prevent them from accumulating
-        for widget in root.winfo_children():
-            if isinstance(widget, tk.Toplevel):
-                widget.destroy()
+        # Destroy existing toplevels to prevent them from accumulating.
+        remove_toplevels()
         # Switch back to top frame
         frm_top.grid(row=0, column=0, ipady=5, sticky="nsew")
+        btn_start.focus()
         frm_bottom.grid_remove()
 
 
@@ -56,11 +56,8 @@ def home():
     root.counter = -1
     root.pdf_count = 0
     root.back = False
-    # Destroy existing toplevels to prevent them from accumulating
-    for widget in root.winfo_children():
-        if isinstance(widget, tk.Toplevel):
-            widget.destroy()
-
+    # Destroy existing toplevels to prevent them from accumulating.
+    remove_toplevels()
     # Switch back to top frame
     frm_top.grid(row=0, column=0, ipady=5, sticky="nsew")
     btn_start.focus()
@@ -90,6 +87,13 @@ def create_pdf_image(counter):
     return Image.frombytes(mode, (pix.width, pix.height), pix.samples)
 
 
+# Function to destroy existing toplevels to prevent them from accumulating.
+def remove_toplevels():
+    for widget in root.winfo_children():
+        if isinstance(widget, tk.Toplevel):
+            widget.destroy()
+
+
 def next():
     # Check whether 'entry_new' has changed and if so give option of saving
     # with the new name
@@ -109,10 +113,6 @@ def next():
         else:
             save()
     else:
-        # Destroy existing toplevels to prevent them from accumulating.
-        for widget in root.winfo_children():
-            if isinstance(widget, tk.Toplevel):
-                widget.destroy()
         # Increment the counter
         root.counter += 1
         # Check whether this call came from the back function
@@ -128,7 +128,7 @@ def next():
         # Check whether the last pdf has been viewed
         if root.counter >= len(root.file_list):
             messagebox.showinfo(
-                "PDF Renamer", "No more pdf files in the specified directory!"
+                "PDF Renamer", "No more pdf files in this directory!"
             )
             new_var.set("")
             return_()
@@ -140,12 +140,12 @@ def next():
             else:
                 # Disable the back button
                 btn_back["state"] = "disabled"
-            # Create file_name (exclude the pdf extension name, it is added
-            # automatically)
+            # Extract file_name from file list; exclude the pdf extension name,
+            # it is added automatically)
             root.file_name = root.file_list[root.counter][
                 len(root.pathname) + 1 : len(root.file_list[root.counter]) - 4
             ]
-            # Populate text field of lbl_file_name_is and show it
+            # Populate text field of lbl_file_is and show it
             lbl_file_is.config(text=root.file_name)
             lbl_file_is.grid()
             # Update and show file counter.
@@ -164,19 +164,25 @@ def next():
             frm_top.grid_remove()
             # Show bottom frame.
             frm_bottom.grid()
+            # Create image of first page of the pdf file
             img = create_pdf_image(root.counter)
             tkimage = ImageTk.PhotoImage(img)
-            # Create top-level to view the pdf
+            # Destroy existing toplevels to prevent them from accumulating.
+            remove_toplevels()
+            # Create new top-level to view the image
             tl_next = tk.Toplevel(root, name="tl_next_name")
             root.update_idletasks()
-            # Set geometry of top level window:
-            # x coordinate = x of root + width of root + 10 for small gap
+            # Set geometry of the new top level window:
             tl_next.geometry(
                 "%dx%d+%d+%d"
                 % (
                     650,
                     790,
+                    # x coordinate of the image window= x of root + width of
+                    # root + 10 for small gap
                     root.winfo_x() + root.winfo_width() + 10,
+                    # y coordinate of the image window = y coordinate of the
+                    # root window
                     root.winfo_y(),
                 )
             )
