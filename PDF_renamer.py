@@ -131,7 +131,8 @@ def next():
                 "PDF Renamer", "No more pdf files in this directory!"
             )
             new_var.set("")
-            return_()
+            root.counter = -1
+            next()
         else:
             # Back button should only be active if root.counter is 1 or higher
             if root.counter > 0:
