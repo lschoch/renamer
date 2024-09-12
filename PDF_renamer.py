@@ -125,13 +125,14 @@ def next():
                 # Decrement root.counter by 2, one for the increment above and
                 # one to go back
                 root.counter -= 2
-        # Check whether the last pdf has been viewed
+        # Start over when the last pdf has been viewed
         if root.counter >= len(root.file_list):
             messagebox.showinfo(
                 "PDF Renamer", "No more pdf files in this directory!"
             )
             new_var.set("")
-            return_()
+            root.counter = -1
+            next()
         else:
             # Back button should only be active if root.counter is 1 or higher
             if root.counter > 0:
