@@ -438,21 +438,16 @@ frm_bottom_btns.grid(row=5, column=0, columnspan=2, padx=8, pady=(5, 10))
 btn_save = ttk.Button(
     master=frm_bottom_btns, width=5, text="Save", command=lambda: save()
 )
-
 btn_back = ttk.Button(
     master=frm_bottom_btns, width=5, text="Back", command=lambda: back()
 )
-
 btn_next = ttk.Button(
     master=frm_bottom_btns, width=5, text="Next", command=lambda: next()
 )
-
 btn_home = ttk.Button(
     master=frm_bottom_btns, width=5, text="Home", command=lambda: home()
 )
-
 btn_save.grid(row=0, column=0, padx=10, ipadx=10, pady=5, sticky="e")
-
 btn_back.grid(
     row=0,
     column=1,
@@ -460,7 +455,6 @@ btn_back.grid(
     ipadx=10,
     pady=5,
 )
-
 btn_next.grid(
     row=0,
     column=2,
@@ -468,7 +462,6 @@ btn_next.grid(
     ipadx=10,
     pady=5,
 )
-
 btn_home.grid(row=0, column=3, padx=10, ipadx=10, pady=5, sticky="w")
 
 if __name__ == "__main__":
