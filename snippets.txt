@@ -1,4 +1,4 @@
 pyinstaller --onefile --windowed --clean --icon images/PDF_renamer.ico PDF_renamer.py
 pip install https://github.com/pyinstaller/pyinstaller/archive/develop.zip
-macOS: source env/bin/activate
+macOS: source venv/bin/activate
 macOS: deactivate
