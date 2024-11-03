@@ -316,8 +316,8 @@ lbl_start = tk.Label(
     background="#99ccff",
     font=("Arial", 14),
     text="The first page of each pdf file in a selected directory is "
-    + "displayed \nsequentially, with option to rename the file. "
-    + "Click <start> to begin \nby selecting a directory.",
+    + "displayed with option to rename the file. \n"
+    + "Click <start> to begin by selecting a directory.",
     justify="left",
 )
 lbl_start.grid(

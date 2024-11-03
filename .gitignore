@@ -6,3 +6,6 @@ samples.py
 venv
 __pycache__
 tk_practice.py
+*.spec
+build/
+dist/
