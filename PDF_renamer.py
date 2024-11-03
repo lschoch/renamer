@@ -315,16 +315,11 @@ lbl_start = tk.Label(
     master=frm_top,
     background="#99ccff",
     font=("Arial", 14),
-    text="The first page of each pdf file in a selected directory is "
-    + "displayed with option to rename the file. \n"
-    + "Click <start> to begin by selecting a directory.",
-    justify="left",
+    text="The first page of each pdf file in a selected directory\nis "
+    + "displayed with the option to rename the file.",
+    # justify="left",
 )
-lbl_start.grid(
-    row=0,
-    column=0,
-    padx=5,
-)
+lbl_start.grid(row=0, column=0, padx=15, pady=(5, 0))
 
 # Create frame for start and quit buttons
 frm_top_btns = tk.Frame(master=frm_top, background="#99ccff")
