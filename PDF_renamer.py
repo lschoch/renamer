@@ -6,7 +6,6 @@ from tkinter import filedialog as fd
 from tkinter import messagebox, ttk
 
 import fitz
-import icecream as ic  # noqa: F401
 from PIL import Image, ImageTk
 
 
