@@ -6,9 +6,9 @@ codesign --deep --force --options=runtime --entitlements ./entitlements.plist --
 
 codesign --deep --force --options=runtime --entitlements ./entitlements.plist --sign "Developer ID Application: Lawrence Schoch (SS8V2GBLP4)" --timestamp PDF_renamer
 
-ditto ./dist ./tmp/PDF_renamer
+ditto ./dist ./tmp
 
-productbuild --identifier "com.PDF_renamer.pkg" --sign "Developer ID Installer: Lawrence Schoch (SS8V2GBLP4)" --timestamp --root ./tmp/PDF_renamer /Applications PDF_renamer.pkg
+productbuild --identifier "com.PDF_renamer.pkg" --sign "Developer ID Installer: Lawrence Schoch (SS8V2GBLP4)" --timestamp --root ./tmp/PDF_renamer.app /Applications PDF_renamer.pkg
 
 check if pkg is signed:
 /usr/sbin/spctl --assess --ignore-cache --verbose --type install PDF_renamer.pkg

@@ -8,3 +8,4 @@ tk_practice.py
 *.spec
 build/
 dist/
+tmp/
