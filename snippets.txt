@@ -1,0 +1,29 @@
+pyinstaller --onefile --windowed --clean --log-level WARN --icon "images/PDF_renamer1.png" --name "PDF Renamer" PDF_renamer.py
+
+security find-identity -p basic -v
+
+codesign --deep --force --options=runtime --entitlements ./entitlements.plist --sign "CE9A89DA681F5F90591D9D8F07C1488D9FF36D7E" --timestamp ./dist/PDF_renamer
+
+codesign --deep --force --options=runtime --entitlements ./entitlements.plist --sign "Developer ID Application: Lawrence Schoch (SS8V2GBLP4)" --timestamp PDF_renamer
+
+ditto ./dist ./tmp/PDF_renamer
+
+productbuild --identifier "com.PDF_renamer.pkg" --sign "Developer ID Installer: Lawrence Schoch (SS8V2GBLP4)" --timestamp --root ./tmp/PDF_renamer /Applications PDF_renamer.pkg
+
+check if pkg is signed:
+/usr/sbin/spctl --assess --ignore-cache --verbose --type install PDF_renamer.pkg
+
+xcrun notarytool history --keychain-profile "MyNotarizationCredentials"
+
+xcrun notarytool submit --keychain-profile "MyNotarizationCredentials" --wait ./PDF_renamer.pkg
+
+xcrun notarytool log --keychain-profile "MyNotarizationCredentials" 7fc3503c-aedb-4fb5-8402-53d31d8d1298
+
+xcrun stapler staple PDF_renamer.pkg
+
+hiddenimports=["_winapi", "winreg", "_frozen_importlib_external", "msvcrt", "multiprocessing.BufferTooShort", "multiprocessing.AuthenticationError", "multiprocessing.get_context", "multiprocessing.TimeoutError", "multiprocessing.set_start_method", "vms_lib", "jaraco.text.yield_lines", "_overlapped", "olefile", "pygments.lexers.Python3Lexer", "pygments.lexers.PythonLexer", "pygments.lexers.PrologLexe", "pygments.formatters.Terminal256Formatter", "six.moves.xrange", "six.moves",],
+
+hdiutil create  -srcfolder ./dist/"PDF Renamer.app" "PDF Renamer.dmg"
+hdiutil create  -srcfolder ./dist/PDF_renamer PDF_renamer.dmg
+
+cp -fR PDF_renamer.pkg ../../Downloads
